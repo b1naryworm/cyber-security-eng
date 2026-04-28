@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Security & OpSec</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        void: '#060a0e',
+        slate: {
+          950: '#0a0f16',
+          900: '#0d1420',
+          850: '#111a28',
+          800: '#152030',
+        },
+        emerald: { accent: '#10d9a0' },
+        cyan: { accent: '#22d3ee' },
+      },
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'monospace'],
+        body: ['DM Sans', 'sans-serif'],
+      },
+    }
+  }
+}
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: #060a0e;
+    font-family: 'DM Sans', sans-serif;
+    color: #cbd5e1;
+    margin: 0;
+	padding-top: 80px; /* Space for fixed header */
+  }
+  
+  /* ---------- HEADER ---------- */
+  header {
+    background: rgba(6, 10, 14, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .nav-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #94a3b8;
+    transition: color 0.3s;
+  }
+  .nav-link:hover { color: #10d9a0; }
+  
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(16,217,160,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(34,211,238,0.07) 0%, transparent 60%),
+                #060a0e;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(16,217,160,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16,217,160,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, black, transparent 80%);
+  }
+  .hero-line {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(16,217,160,0.4), transparent);
+  }
+
+  /* ---------- ACCENT COLORS ---------- */
+  .text-accent { color: #10d9a0; }
+  .text-cyan { color: #22d3ee; }
+  .bg-accent { background-color: #10d9a0; }
+  .border-accent { border-color: rgba(16,217,160,0.3); }
+
+  /* ---------- BADGE ---------- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 100px;
+    border: 1px solid rgba(16,217,160,0.35);
+    background: rgba(16,217,160,0.08);
+    color: #10d9a0;
+  }
+  .badge-cyan {
+    border-color: rgba(34,211,238,0.3);
+    background: rgba(34,211,238,0.07);
+    color: #22d3ee;
+  }
+
+  /* ---------- PACKAGE CARDS ---------- */
+  .pkg-card {
+    background: #0d1420;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+  }
+  .pkg-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .pkg-card:hover { border-color: rgba(16,217,160,0.25); transform: translateY(-3px); }
+  .pkg-card:hover::before { opacity: 1; }
+  .pkg-card.accent-green::before { background: linear-gradient(90deg, transparent, #10d9a0, transparent); }
+  .pkg-card.accent-cyan::before  { background: linear-gradient(90deg, transparent, #22d3ee, transparent); }
+  .pkg-card.accent-violet::before { background: linear-gradient(90deg, transparent, #a78bfa, transparent); }
+  .pkg-card.accent-amber::before { background: linear-gradient(90deg, transparent, #fbbf24, transparent); }
+
+  .pkg-header {
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .pkg-body { padding: 24px 28px; }
+
+  /* ---------- ICON CIRCLES ---------- */
+  .icon-circle {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .ic-green  { background: rgba(16,217,160,0.12); color: #10d9a0; border: 1px solid rgba(16,217,160,0.2); }
+  .ic-cyan   { background: rgba(34,211,238,0.10); color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); }
+  .ic-violet { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+  .ic-amber  { background: rgba(251,191,36,0.10); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .ic-rose   { background: rgba(251,113,133,0.10); color: #fb7185; border: 1px solid rgba(251,113,133,0.2); }
+
+  /* ---------- FEATURE ROWS ---------- */
+  .feature-row {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .feature-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .feature-row .icon-circle { margin-top: 2px; }
+  .feature-title { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 14px; color: #e2e8f0; margin: 0 0 4px; }
+  .feature-desc { font-size: 13px; line-height: 1.6; color: #64748b; margin: 0; }
+
+  /* ---------- SUB-ITEM LISTS ---------- */
+  .sub-list { list-style: none; padding: 0; margin: 10px 0 0; }
+  .sub-list li {
+    font-size: 13px; color: #64748b; line-height: 1.6;
+    padding: 3px 0 3px 16px; position: relative;
+  }
+  .sub-list li::before {
+    content: '—'; position: absolute; left: 0; color: #10d9a0; font-size: 11px;
+  }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #10d9a0; margin-bottom: 8px;
+  }
+  .section-h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: clamp(28px, 4vw, 40px);
+    color: #f1f5f9; line-height: 1.15; margin: 0 0 16px;
+  }
+  .section-lead { font-size: 16px; color: #64748b; line-height: 1.7; max-width: 600px; }
+
+  /* ---------- DIVIDER ---------- */
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent); margin: 72px 0; }
+
+  /* ---------- SPECIAL BLOCK ---------- */
+  .special-block {
+    background: #0d1420; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 20px 24px; margin-bottom: 12px;
+    transition: border-color 0.3s;
+  }
+  .special-block:hover { border-color: rgba(34,211,238,0.2); }
+  .special-block-title {
+    font-family: 'DM Sans', sans-serif; font-weight: 600;
+    font-size: 15px; color: #e2e8f0; margin: 0 0 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .special-block-body { font-size: 13px; color: #64748b; line-height: 1.7; }
+  .special-block-body strong { color: #94a3b8; font-weight: 500; }
+
+  /* ---------- DOUBLE VPN CALLOUT ---------- */
+  .vpn-callout {
+    background: linear-gradient(135deg, rgba(16,217,160,0.06), rgba(34,211,238,0.04));
+    border: 1px solid rgba(16,217,160,0.2);
+    border-radius: 12px; padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .vpn-callout-title {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+    color: #10d9a0; margin: 0 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .vpn-detail { font-size: 13px; color: #64748b; line-height: 1.7; }
+  .vpn-detail + .vpn-detail { margin-top: 8px; }
+  .vpn-detail strong { color: #94a3b8; font-weight: 500; }
+
+  /* ---------- PACKAGE NUMBER ---------- */
+  .pkg-number {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
+    color: #334155; letter-spacing: 0.1em;
+  }
+  .pkg-title {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(22px, 3vw, 28px); color: #f1f5f9; margin: 4px 0 8px; line-height: 1.1;
+  }
+  .pkg-subtitle { font-size: 13px; color: #475569; line-height: 1.6; }
+
+  /* ---------- COMMITMENT CARD ---------- */
+  .commit-card {
+    background: #0d1420;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 20px;
+    display: flex; gap: 14px; align-items: flex-start;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .commit-card:hover {
+    border-color: rgba(16,217,160,0.2);
+    background: rgba(16,217,160,0.03);
+  }
+  .commit-num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500;
+    color: #10d9a0; min-width: 28px; padding-top: 2px;
+  }
+  .commit-title { font-weight: 600; font-size: 14px; color: #e2e8f0; margin: 0 0 4px; }
+  .commit-desc { font-size: 13px; color: #64748b; line-height: 1.6; margin: 0; }
+
+  /* ---------- FOOTER ---------- */
+  .footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    background: #060a0e;
+  }
+
+  /* ---------- SECTION FADE-IN ---------- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+
+  /* ---------- HERO GLOW PULSE ---------- */
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  .glow-pulse { animation: pulse-glow 3s ease-in-out infinite; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 640px) {
+    .pkg-header, .pkg-body { padding-left: 18px; padding-right: 18px; }
+    .special-block { padding: 16px 18px; }
+    .vpn-callout { padding: 16px 18px; }
+  }
+  
+  /* ---------- CONTACT SECTION STYLES ---------- */
+.contact-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 50% 50%, rgba(16, 217, 160, 0.05) 0%, transparent 80%);
+    pointer-events: none;
+}
+
+.input-field {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #f1f5f9;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: rgba(16, 217, 160, 0.5);
+    background: rgba(16, 217, 160, 0.03);
+    box-shadow: 0 0 20px rgba(16, 217, 160, 0.1);
+}
+
+.contact-method-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(13, 20, 32, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.contact-method-card:hover {
+    transform: translateX(8px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-method-card.tg:hover { border-color: rgba(16, 217, 160, 0.4); }
+.contact-method-card.mail:hover { border-color: rgba(34, 211, 238, 0.4); }
+
+.label-mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #475569;
+    margin-bottom: 8px;
+    display: block;
+}
+ 
+ @media (max-width: 640px) {
+    .section-h2 {
+        font-size: 28px !important;
+        text-align: center;
+    }
+    .section-lead {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .hero {
+        padding-top: 100px;
+        text-align: center;
+    }
+    .hero flex {
+        justify-content: center;
+    }
+    /* Compact "steps" on mobile */
+    #process .group {
+        text-align: center;
+    }
+    #process .flex {
+        justify-content: center;
+    }
+}
+
+/* Glow effect on contact buttons */
+.contact-method-card:hover, a[href^="https://t.me"]:hover, a[href^="mailto"]:hover {
+    box-shadow: 0 0 30px rgba(16, 217, 160, 0.05);
+}
+</style>
+</head>
+<body>
+
+<header class="fixed top-0 left-0 right-0 z-[100]">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="font-display font-extrabold text-lg tracking-tight text-slate-100 uppercase hidden sm:block">// security <span class="text-accent">& privacy</span></span>
+    </div>
+    
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="#packages" class="nav-link">Packages</a>
+      <a href="#special" class="nav-link">Technologies</a>
+      <a href="#process" class="nav-link">Process</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+
+    <a href="#contact" class="bg-accent text-void font-display font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full hover:opacity-80 transition-opacity">
+      Consultation
+    </a>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════ HERO ══════════════════════════════════════ -->
+<section class="hero min-h-[88vh] flex flex-col justify-center px-6 py-24 relative">
+  <div class="hero-grid"></div>
+  <div class="hero-line"></div>
+
+  <!-- Top bar -->
+  <div class="absolute top-0 left-0 right-0 px-6 sm:px-12 py-6 flex items-center justify-between">
+    <span class="font-mono text-xs tracking-widest text-slate-600 uppercase">Digital Security</span>
+    <span class="badge glow-pulse"><i class="fa-solid fa-circle text-[8px]"></i> Worldwide</span>
+  </div>
+
+  <div class="max-w-5xl mx-auto w-full relative z-10">
+    <!-- Eyebrow -->
+    <div class="fade-up mb-6">
+      <span class="badge"><i class="fa-solid fa-shield-halved text-[10px]"></i> Comprehensive solutions</span>
+    </div>
+
+    <!-- Main headline -->
+    <h1 class="fade-up delay-1" style="font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(38px,7vw,88px); line-height:1.0; color:#f1f5f9; margin:0 0 24px;">
+      Digital<br>
+      <span style="color:#10d9a0;">Security</span><br>
+      <span style="color:#94a3b8; font-weight:400; font-size:0.55em;">& Operational Protection</span>
+    </h1>
+
+    <!-- Sub -->
+    <p class="fade-up delay-2" style="font-size:clamp(15px,2vw,18px); color:#64748b; max-width:560px; line-height:1.75; margin:0 0 40px;">
+      For high-risk clients who require comprehensive ecosystems where devices, software, and behavior work as a unified whole. Custom configuration tailored to your threat profile.
+    </p>
+
+    <!-- CTA pills -->
+    <div class="fade-up delay-3 flex flex-wrap gap-3">
+      <a href="#packages" style="display:inline-flex;align-items:center;gap:8px;background:#10d9a0;color:#060a0e;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px 24px;border-radius:100px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <i class="fa-solid fa-layer-group text-[13px]"></i> View packages
+      </a>
+      <a href="#special" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:#94a3b8;font-family:'Syne',sans-serif;font-weight:600;font-size:14px;padding:12px 24px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(16,217,160,0.4)';this.style.color='#10d9a0'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#94a3b8'">
+        <i class="fa-solid fa-sliders text-[13px]"></i> Special solutions
+      </a>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="fade-up delay-4 mt-16 pt-12 border-t border-white/[0.06] grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#10d9a0;">4</div>
+        <div style="font-size:12px;color:#475569;margin-top:2px;">Protection packages</div>
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#22d3ee;">10+</div>
+        <div style="font-size:12px;color:#475569;margin-top:2px;">Special solutions</div>
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#a78bfa;">1 mo</div>
+        <div style="font-size:12px;color:#475569;margin-top:2px;">Tech support</div>
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#fbbf24;">2–4 h</div>
+        <div style="font-size:12px;color:#475569;margin-top:2px;">Training</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ PACKAGES ══════════════════════════════════ -->
+<section id="packages" class="px-6 py-20 max-w-7xl mx-auto">
+  <div class="mb-16 text-center sm:text-left">
+    <p class="section-tag"><i class="fa-solid fa-boxes-stacked mr-2"></i>Solutions</p>
+    <h2 class="section-h2">Asset & Identity Protection Architecture</h2>
+    <p class="section-lead mx-auto sm:mx-0">Comprehensive systems where hardware, software, and your habits work as a single mechanism.</p>
+  </div>
+
+  <!-- ─── PACKAGE 01 ─── -->
+  <div class="pkg-card accent-green mb-12">
+    <div class="pkg-header">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="pkg-number text-accent">PACKAGE 01</div>
+          <div class="pkg-title">Infrastructure Integrity</div>
+          <p class="text-slate-400 text-sm mt-1 uppercase tracking-wider">Stationary protection of living and working spaces</p>
+        </div>
+        <i class="fa-solid fa-house-lock text-4xl text-accent/10"></i>
+      </div>
+    </div>
+    <div class="pkg-body">
+      <!-- In simple terms -->
+      <div class="mb-8 p-4 rounded-xl bg-accent/5 border border-accent/10">
+        <p class="text-sm text-slate-300 italic">
+          <b class="text-accent">In simple terms:</b> We turn your home or office into a digital bunker. The provider does not know what you are doing online, a hacker cannot "jump" from the TV to your computer, and all your passwords and documents are stored physically in your room, not on Google or Apple servers.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10">
+        <div class="space-y-6">
+          <div>
+            <p class="feature-title text-accent">Network Perimeter (VLAN Segmentation)</p>
+            <p class="feature-desc">Deep network segmentation. We isolate "dirty" devices (Smart TV, cameras, robot vacuums) from your workstations. Even if your camera is hacked, the attacker cannot access data on the same network.</p>
+          </div>
+          <div>
+            <p class="feature-title text-accent">Router-Level Double-VPN</p>
+            <p class="feature-desc">All home internet traffic is encrypted at the router level and routed through a chain of two independent servers in different countries. This hides the very fact of using protection from the ISP (DPI) and ensures 100% anonymity for all devices (even those where VPN cannot be installed).</p>
+          </div>
+        </div>
+        <div class="space-y-6">
+          <div>
+            <p class="feature-title text-accent">Digital Sovereignty (Self-Hosted Cloud)</p>
+            <p class="feature-desc">Deployment of a personal password server (Vaultwarden) and cloud (Nextcloud). You get full functionality of iCloud/Google Drive, but with zero risk of data leakage to corporations or intelligence agencies.</p>
+          </div>
+          <div>
+            <p class="feature-title text-accent">DNS Sinkhole & AdBlock</p>
+            <p class="feature-desc">System on-the-fly analyzes all outgoing device requests and blocks ads, trackers, and telemetry before they even load. Devices stop sending activity reports to the manufacturer.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Hardware Base -->
+      <div class="mt-10 pt-6 border-t border-white/5">
+        <p class="text-[10px] font-mono uppercase text-slate-500 tracking-[0.2em] mb-3 text-center">Package technology stack:</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">MikroTik RB5009 (Enterprise Router)</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">Raspberry Pi 5 (Server)</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">UniFi 6 Lite (Secure AP)</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">Docker & WireGuard-Kernel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PACKAGE 02 ─── -->
+  <div class="pkg-card accent-cyan mb-12">
+    <div class="pkg-header">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="pkg-number text-cyan-400">PACKAGE 02</div>
+          <div class="pkg-title">Operational Mobility</div>
+          <p class="text-slate-400 text-sm mt-1 uppercase tracking-wider">Security on the move and during international travel</p>
+        </div>
+        <i class="fa-solid fa-route text-4xl text-cyan-400/10"></i>
+      </div>
+    </div>
+    <div class="pkg-body">
+      <!-- In simple terms -->
+      <div class="mb-8 p-4 rounded-xl bg-cyan-400/5 border border-cyan-400/10">
+        <p class="text-sm text-slate-300 italic">
+          <b class="text-cyan-400">In simple terms:</b> Your protection now fits in your pocket. Your phone stops tracking you, and in any hotel, airport, or cafe you create your own "personal bubble" of internet that cannot be intercepted. Even if your phone is stolen or taken for inspection, the data will be physically destroyed or remain encrypted.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10">
+        <div class="space-y-6">
+          <div>
+            <p class="feature-title text-cyan-400">Hardened Mobile OS (GrapheneOS)</p>
+            <p class="feature-desc">Installation of the most secure OS on Google Pixel. Complete removal of Google services at the kernel level, app sandboxing, and protection against forensic cracking tools (GrayKey/Cellebrite).</p>
+          </div>
+          <div>
+            <p class="feature-title text-cyan-400">Stealth Network Connectivity</p>
+            <p class="feature-desc">Configuration of anonymous eSIMs purchased with cryptocurrency (no KYC). Your traffic is masked as regular HTTPS (VLESS/XTLS-Reality protocols), so any ISP sees "video watching" rather than your encrypted tunnel.</p>
+          </div>
+        </div>
+        <div class="space-y-6">
+          <div>
+            <p class="feature-title text-cyan-400">Portable Travel Perimeter</p>
+            <p class="feature-desc">Using a mini-router that connects to public Wi‑Fi and creates your personal network. Your devices never "expose" their MAC addresses and hotel network IDs, staying behind a reliable firewall.</p>
+          </div>
+          <div>
+            <p class="feature-title text-cyan-400">Visual & Physical Shielding</p>
+            <p class="feature-desc">Installation of professional privacy filters (screen visible only to you). Use of Faraday bags to instantly switch all devices to "radio silence" mode (blocking GSM/GPS/Wi‑Fi).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hardware Base -->
+      <div class="mt-10 pt-6 border-t border-white/5 text-center">
+        <p class="text-[10px] font-mono uppercase text-slate-500 tracking-[0.2em] mb-3">Package technology stack:</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">Google Pixel 8/9 (Titan M2)</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">GL.iNet Beryl AX (Travel Router)</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">Mission Darkness (Faraday Gear)</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[11px] text-slate-400">Silent.link (Anonymous eSIM)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PACKAGE 03 ─── -->
+  <div class="pkg-card accent-violet mb-12 border-violet-500/20">
+    <div class="pkg-header">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="pkg-number text-violet-400">PACKAGE 03</div>
+          <div class="pkg-title">Strategic Autonomy (Ghost Protocol)</div>
+          <p class="text-slate-400 text-sm mt-1 uppercase tracking-wider">Ultimate anonymity and personal sovereignty</p>
+        </div>
+        <i class="fa-solid fa-user-secret text-4xl text-violet-400/10"></i>
+      </div>
+    </div>
+    <div class="pkg-body">
+      <!-- In simple terms -->
+      <div class="mb-8 p-4 rounded-xl bg-violet-400/5 border border-violet-400/10">
+        <p class="text-sm text-slate-300 italic">
+          <b class="text-violet-400">In simple terms:</b> You become a "digital ghost". You are completely independent of terrestrial internet (satellite), your map coordinates are false, your money is anonymous, and your messenger belongs only to you. This is the highest level of protection for those whose security is priority #1.
+        </p>
+      </div>
+
+      <p class="text-slate-400 text-xs uppercase tracking-widest mb-6 text-center font-bold">Includes everything from previous packages + the following systems:</p>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        <ul class="space-y-6">
+          <li class="flex gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-400/10 flex items-center justify-center text-violet-400 flex-shrink-0 mt-1"><i class="fa-solid fa-satellite"></i></div>
+            <div>
+              <b class="text-slate-200 block text-base mb-1">Independent Satellite Exit Nodes</b>
+              <p class="text-sm text-slate-500 leading-relaxed">Internet access via Starlink Mini. Complete bypass of local ISP and intelligence infrastructure. Your signal goes straight to orbit, eliminating geolocation via ground towers.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-400/10 flex items-center justify-center text-violet-400 flex-shrink-0 mt-1"><i class="fa-solid fa-earth-americas"></i></div>
+            <div>
+              <b class="text-slate-200 block text-base mb-1">Global Presence Simulation (GPS Spoofing)</b>
+              <p class="text-sm text-slate-500 leading-relaxed">Deep coordinate spoofing at the system level. Your device broadcasts signals of being anywhere in the world (e.g., Iceland). All apps, banks, and trackers believe this location.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-400/10 flex items-center justify-center text-violet-400 flex-shrink-0 mt-1"><i class="fa-brands fa-elementor"></i></div>
+            <div>
+              <b class="text-slate-200 block text-base mb-1">Sovereign Matrix Server</b>
+              <p class="text-sm text-slate-500 leading-relaxed">Deployment of your personal Matrix communication server. Registration without a phone number, no metadata on third-party servers, and full control over chat history.</p>
+            </div>
+          </li>
+        </ul>
+        <ul class="space-y-6">
+          <li class="flex gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-400/10 flex items-center justify-center text-violet-400 flex-shrink-0 mt-1"><i class="fa-solid fa-coins"></i></div>
+            <div>
+              <b class="text-slate-200 block text-base mb-1">Financial Ghost (Monero Architecture)</b>
+              <p class="text-sm text-slate-500 leading-relaxed">Full setup of anonymous financial flows. Breaking the link between your identity and spending through Monero (XMR) and anonymous payment gateways.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-400/10 flex items-center justify-center text-violet-400 flex-shrink-0 mt-1"><i class="fa-solid fa-laptop-code"></i></div>
+            <div>
+              <b class="text-slate-200 block text-base mb-1">Workstation Hardening (Qubes OS)</b>
+              <p class="text-sm text-slate-500 leading-relaxed">Laptop setup with Qubes OS. Each task (banking, work, browsing) lives in its own isolated virtual "room". A virus in the browser will never reach your passwords.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <div class="w-10 h-10 rounded-lg bg-violet-400/10 flex items-center justify-center text-violet-400 flex-shrink-0 mt-1"><i class="fa-solid fa-file-shield"></i></div>
+            <div>
+              <b class="text-slate-200 block text-base mb-1">Digital Will & Recovery Guide</b>
+              <p class="text-sm text-slate-500 leading-relaxed">Preparation of "Dead Hand" protocols for passing access to heirs and a detailed recovery map of your entire digital life in case of loss of all devices.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ SPECIAL SOLUTIONS ════════════════════════════ -->
+<section id="special" class="px-6 py-20 max-w-7xl mx-auto border-t border-white/[0.03]">
+  <div class="mb-16">
+    <p class="section-tag">Targeted Security</p>
+    <h2 class="section-h2">Special Solutions</h2>
+    <p class="section-lead">Targeted services to strengthen specific nodes of your protection.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <!-- GPS Spoofing -->
+    <div class="special-block border-l-4 border-l-cyan-500 bg-slate-900/40 p-8 rounded-r-2xl">
+      <div class="special-block-title text-xl text-white mb-4">
+        <i class="fa-solid fa-location-dot text-cyan-400 mr-2"></i> Full GPS Spoofing
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed mb-4">
+        <b class="text-cyan-400">What it is:</b> Your device is physically here, but for the internet and satellites — in another country.
+      </p>
+      <p class="text-sm text-slate-500">
+        We spoof data at the OS kernel level. This deceives even the most advanced tracking systems, Uber, banking apps, and cell tower triangulation systems. You become geographically untraceable.
+      </p>
+    </div>
+
+    <!-- Workstation Hardening -->
+    <div class="special-block border-l-4 border-l-violet-500 bg-slate-900/40 p-8 rounded-r-2xl">
+      <div class="special-block-title text-xl text-white mb-4">
+        <i class="fa-solid fa-laptop-code text-violet-500 mr-2"></i> Workstation Hardening
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed mb-4">
+        <b class="text-violet-500">What it is:</b> Turning an ordinary laptop into an impregnable fortress.
+      </p>
+      <p class="text-sm text-slate-500">
+        Installation of Qubes OS (task isolation), replacement of BIOS with Coreboot/Libreboot (protection against hardware backdoors), USBGuard configuration and full disk encryption LUKS2. Access key — physical YubiKey. Without the key, the laptop is just a pile of metal.
+      </p>
+    </div>
+
+    <!-- Acoustic Shield -->
+    <div class="special-block border-l-4 border-l-green-500 bg-slate-900/40 p-8 rounded-r-2xl">
+      <div class="special-block-title text-xl text-white mb-4">
+        <i class="fa-solid fa-microphone-slash text-green-500 mr-2"></i> Acoustic & Sensor Shield
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed mb-4">
+        <b class="text-green-500">What it is:</b> Protection against eavesdropping and tracking via "side" signals.
+      </p>
+      <p class="text-sm text-slate-500">
+        Use of hardware microphone blockers and disabling sensors (accelerometer, gyroscope) in the smartphone. Modern surveillance methods allow recording sound through motion sensors — we physically block this possibility.
+      </p>
+    </div>
+
+    <!-- Metadata Scrubbing -->
+    <div class="special-block border-l-4 border-l-amber-500 bg-slate-900/40 p-8 rounded-r-2xl">
+      <div class="special-block-title text-xl text-white mb-4">
+        <i class="fa-solid fa-broom text-amber-500 mr-2"></i> Automated Metadata Scrubbing
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed mb-4">
+        <b class="text-amber-500">What it is:</b> Automated "sterilization" of all your files before sending.
+      </p>
+      <p class="text-sm text-slate-500">
+        Every photo carries GPS coordinates of your home, date, and phone ID. We will set up a system so that any attempt to send or save a file instantly strips all this data. Share information, not your location.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider mx-6 sm:mx-12"></div>
+
+<!-- ══════════════════════════════════ SPECIAL SOLUTIONS (If you stay on Windows/iOS) ════════════════════════ -->
+<section id="special" class="px-6 sm:px-12 pb-24 max-w-7xl mx-auto">
+  <div class="mb-14">
+    <p class="section-tag"><i class="fa-solid fa-sliders mr-2"></i>Special Solutions</p>
+    <h2 class="section-h2">If you stay on Windows / iOS</h2>
+    <p class="section-lead">Not ready for a radical change of devices or OS? We offer services to "squeeze" maximum security from your current tech.</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <!-- Windows -->
+    <div class="pkg-card accent-cyan">
+      <div class="pkg-header">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="icon-circle ic-cyan"><i class="fa-brands fa-windows"></i></div>
+          <div>
+            <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:#22d3ee;">1. Windows</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#f1f5f9;">If you don't want Linux</div>
+          </div>
+        </div>
+      </div>
+      <div class="pkg-body">
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-broom"></i></div>
+          <div>
+            <p class="feature-title">OS Hardening</p>
+            <p class="feature-desc">Removal of telemetry and spy modules using professional utilities: O&O ShutUp10, Chris Titus Tech Tool.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-vault"></i></div>
+          <div>
+            <p class="feature-title">Data Encryption: VeraCrypt</p>
+            <p class="feature-desc">Setting up VeraCrypt to create encrypted containers for important documents.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-masks-theater"></i></div>
+          <div>
+            <p class="feature-title">Hidden OS (Plausible Deniability)</p>
+            <p class="feature-desc">Creating a "double bottom". One password opens a normal system, the second opens a hidden encrypted system whose existence is impossible to prove.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div>
+            <p class="feature-title">Physical hardening (DIY)</p>
+            <p class="feature-desc">Removing and disconnecting the microphone and webcam cables. Using external USB peripherals instead of built-in ones.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- iPhone -->
+    <div class="pkg-card accent-cyan">
+      <div class="pkg-header">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="icon-circle ic-cyan"><i class="fa-brands fa-apple"></i></div>
+          <div>
+            <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:#22d3ee;">2. iPhone</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#f1f5f9;">If not Pixel + GrapheneOS</div>
+          </div>
+        </div>
+      </div>
+      <div class="pkg-body">
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-lock"></i></div>
+          <div>
+            <p class="feature-title">Lockdown Mode</p>
+            <p class="feature-desc">Deep configuration of Apple's ultra-secure mode. Enabling Lockdown Mode and Advanced Data Protection (E2EE for iCloud backups).</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <div>
+            <p class="feature-title">Advanced Data Protection: E2EE for iCloud</p>
+            <p class="feature-desc">Switching iCloud to full end-to-end encryption so that even Apple does not have access to your backups.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <div>
+            <p class="feature-title">Privacy audit of apps</p>
+            <p class="feature-desc">Disabling advertising identifiers, Apple Analytics, and detailed permission settings for each app.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-cyan" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-location-dot"></i></div>
+          <div>
+            <p class="feature-title">Metadata cleaning: GPS from photos</p>
+            <p class="feature-desc">Setting up shortcuts to automatically remove GPS coordinates before each photo is sent.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Android -->
+    <div class="pkg-card accent-green">
+      <div class="pkg-header">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="icon-circle ic-green"><i class="fa-brands fa-android"></i></div>
+          <div>
+            <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:#10d9a0;">3. Android</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#f1f5f9;">If not GrapheneOS</div>
+          </div>
+        </div>
+      </div>
+      <div class="pkg-body">
+        <div class="feature-row">
+          <div class="icon-circle ic-green" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-trash"></i></div>
+          <div>
+            <p class="feature-title">ADB Debloating</p>
+            <p class="feature-desc">Removing pre-installed "bloatware" from the manufacturer (Samsung, Xiaomi, etc.) that cannot be removed by normal means.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-green" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-shield"></i></div>
+          <div>
+            <p class="feature-title">DNS-over-TLS</p>
+            <p class="feature-desc">Forced routing of DNS queries through secure servers to hide browsing history.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-green" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-location-crosshairs"></i></div>
+          <div>
+            <p class="feature-title">Location Spoofing</p>
+            <p class="feature-desc">System configuration for GPS spoofing so that apps see a "fake" location.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tails -->
+    <div class="pkg-card accent-green">
+      <div class="pkg-header">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="icon-circle ic-green"><i class="fa-solid fa-usb-drive"></i></div>
+          <div>
+            <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:#10d9a0;">4. Tails OS</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#f1f5f9;">Computer in your pocket</div>
+          </div>
+        </div>
+      </div>
+      <div class="pkg-body">
+        <div class="feature-row">
+          <div class="icon-circle ic-green" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-bolt"></i></div>
+          <div>
+            <p class="feature-title">USB anonymity: Tails OS</p>
+            <p class="feature-desc">Universal solution. You insert a USB drive into any computer (Windows/Mac), work in a completely clean environment via Tor, remove the drive — and not a single trace of your presence remains on the computer.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="icon-circle ic-green" style="width:32px;height:32px;font-size:13px;border-radius:8px;"><i class="fa-solid fa-circle-nodes"></i></div>
+          <div>
+            <p class="feature-title">All traffic via Tor</p>
+            <p class="feature-desc">After shutting down the computer, no trace remains: no files, no history, no cookies. All internet traffic goes through the Tor network.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════ ADDITIONAL HARDENING ══════════════════════ -->
+  <div class="mb-14">
+    <p class="section-tag"><i class="fa-solid fa-plus-circle mr-2"></i>Additional hardening</p>
+    <h2 class="section-h2">Special Solutions</h2>
+    <p class="section-lead">Individual services that can be added to any package or used independently.</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <!-- GPS Spoofing -->
+    <div class="special-block" style="border-radius:14px;padding:24px 26px;">
+      <div class="special-block-title text-base mb-3">
+        <div class="icon-circle ic-cyan"><i class="fa-solid fa-location-crosshairs"></i></div>
+        1. Complete geolocation spoofing (GPS + IP + Radio Spoofing)
+      </div>
+      <p class="special-block-body mb-3">Creating a "digital twin" of your device in another part of the world. Physically you are in Argentina, but for all services, apps (Uber, banks, maps) and tracking systems, your device is, for example, in Switzerland or Iceland.</p>
+      <p class="special-block-body mb-3"><strong>What we do:</strong> Hardware-software complex for coordinate spoofing. Unlike regular apps, this solution spoofs data at the system level (Mock Locations + system hardening).</p>
+      <div class="grid grid-cols-3 gap-2 mt-3">
+        <div class="text-center p-2 rounded-lg" style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);">
+          <div class="text-xs text-[#22d3ee] font-mono mb-1">IP</div>
+          <div class="text-xs text-slate-400">Traffic through chosen country</div>
+        </div>
+        <div class="text-center p-2 rounded-lg" style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);">
+          <div class="text-xs text-[#22d3ee] font-mono mb-1">GPS</div>
+          <div class="text-xs text-slate-400">Fake coordinates for OS</div>
+        </div>
+        <div class="text-center p-2 rounded-lg" style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);">
+          <div class="text-xs text-[#22d3ee] font-mono mb-1">Radio</div>
+          <div class="text-xs text-slate-400">Hiding real cell towers and Wi‑Fi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workstation -->
+    <div class="special-block" style="border-radius:14px;padding:24px 26px;">
+      <div class="special-block-title text-base mb-3">
+        <div class="icon-circle ic-violet"><i class="fa-solid fa-laptop-code"></i></div>
+        2. Ultimate laptop hardening (Workstation Hardening)
+      </div>
+      <p class="special-block-body mb-3">We turn an ordinary laptop into a digital fortress, protected from physical intrusion, data theft, and hidden espionage.</p>
+      <ul class="sub-list">
+        <li><strong style="color:#94a3b8;">OS and isolation:</strong> Qubes OS or Hardened Debian with AppArmor/SELinux.</li>
+        <li><strong style="color:#94a3b8;">Firmware:</strong> Coreboot/Libreboot + Measured Boot (TPM 2.0) + own Secure Boot keys.</li>
+        <li><strong style="color:#94a3b8;">Ports:</strong> USBGuard + physical disconnection of camera and microphone at hardware level.</li>
+        <li><strong style="color:#94a3b8;">Encryption:</strong> LUKS2 AES-XTS-256. Key — on YubiKey/Nitrokey. Without the key, data is digital garbage.</li>
+      </ul>
+    </div>
+
+    <!-- Acoustic -->
+    <div class="special-block" style="border-radius:14px;padding:24px 26px;">
+      <div class="special-block-title text-base mb-3">
+        <div class="icon-circle ic-green"><i class="fa-solid fa-ear-deaf"></i></div>
+        3. Acoustic protection (Anti-eavesdropping)
+      </div>
+      <p class="special-block-body mb-2"><strong>Microphone blockers (Mic Lock):</strong> Using physical plugs for the 3.5mm port or software kill switches. The system "thinks" an external headset without a microphone is connected — this hardware-blocks the ability to record sound through built-in microphones of a smartphone or laptop.</p>
+      <p class="special-block-body"><strong>Ultrasonic tracking protection:</strong> Blocking frequencies used by marketing beacons that transmit hidden signals between your TV and smartphone.</p>
+    </div>
+
+    <!-- Metadata -->
+    <div class="special-block" style="border-radius:14px;padding:24px 26px;">
+      <div class="special-block-title text-base mb-3">
+        <div class="icon-circle ic-amber"><i class="fa-solid fa-broom"></i></div>
+        4. Automated metadata scrubbing (Deep Metadata Scrubbing)
+      </div>
+      <p class="special-block-body mb-2"><strong>For Mobile:</strong> Setting up automatic removal of all data (GPS, date, device model) each time a photo is saved or sent.</p>
+      <p class="special-block-body"><strong>For Desktop:</strong> Setting up a "Hot Folder" via the MAT2 utility. Any document (PDF, DOCX) or image placed in this folder instantly becomes anonymous — all hidden metadata is automatically destroyed.</p>
+    </div>
+
+    <!-- Identity Masking -->
+    <div class="special-block" style="border-radius:14px;padding:24px 26px;">
+      <div class="special-block-title text-base mb-3">
+        <div class="icon-circle ic-rose"><i class="fa-solid fa-user-ninja"></i></div>
+        5. Identity masking (Email & Identity Masking)
+      </div>
+      <p class="special-block-body">Implementation of SimpleLogin / AnonAddy system. You no longer expose your real email anywhere. A unique alias is created for each site, forwarding emails to you. This breaks the link between all your accounts — even if one account is compromised, the rest remain untouched.</p>
+    </div>
+
+    <!-- Double VPN standalone -->
+    <div class="special-block" style="border-radius:14px;padding:24px 26px;border-color:rgba(16,217,160,0.25);">
+      <div class="special-block-title text-base mb-3">
+        <div class="icon-circle ic-green"><i class="fa-solid fa-link-slash"></i></div>
+        6. Personal Double-VPN with obfuscation
+      </div>
+      <p class="vpn-detail mb-2"><strong>Essence:</strong> A private chain of two independent servers in different countries (e.g., Switzerland → Iceland).</p>
+      <p class="vpn-detail mb-2"><strong>How it works:</strong> The first server knows your IP, the second knows your traffic. Neither has complete information about you. This is 10 times more reliable than public VPNs.</p>
+      <p class="vpn-detail mb-2"><strong>Obfuscation:</strong> Masking traffic as regular HTTPS (the provider sees "YouTube browsing", not VPN).</p>
+      <p class="vpn-detail mb-2"><strong>Kill Switch:</strong> Instant internet blocking if the connection drops.</p>
+      <p class="vpn-detail"><strong>Technologies:</strong> Rental of personal VPS, WireGuard / VLESS / Shadowsocks protocols. Result: complete invisibility to the provider and protection against de-anonymization.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider mx-6 sm:mx-12"></div>
+
+<!-- ══════════════════════════════════ COMMITMENTS ═══════════════════════════════════ -->
+<section class="px-6 sm:px-12 pb-24 max-w-7xl mx-auto">
+  <div class="mb-12">
+    <p class="section-tag"><i class="fa-solid fa-handshake mr-2"></i>What's included in commitments</p>
+    <h2 class="section-h2">Service and support</h2>
+    <p class="section-lead">Each client receives a full support cycle — from purchasing devices to training on using the new infrastructure.</p>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="commit-card">
+      <div class="commit-num">01</div>
+      <div>
+        <p class="commit-title">Procurement and preparation of equipment</p>
+        <p class="commit-desc">Purchase of "clean", unlinked devices, configured to your tasks and threat profile.</p>
+      </div>
+    </div>
+    <div class="commit-card">
+      <div class="commit-num">02</div>
+      <div>
+        <p class="commit-title">Personal server</p>
+        <p class="commit-desc">Deployment of VPN / Cloud / Matrix infrastructure on chosen hosting from scratch.</p>
+      </div>
+    </div>
+    <div class="commit-card">
+      <div class="commit-num">03</div>
+      <div>
+        <p class="commit-title">Training (2–4 hours)</p>
+        <p class="commit-desc">Personal instruction on using new devices and forming proper digital security habits (OpSec).</p>
+      </div>
+    </div>
+    <div class="commit-card">
+      <div class="commit-num">04</div>
+      <div>
+        <p class="commit-title">Technical support (1 month)</p>
+        <p class="commit-desc">Prompt answers to questions and adjustment of settings within a month after implementation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ PROCESS SECTION ═══════════════════════════════════ -->
+<section id="process" class="px-6 py-20 max-w-7xl mx-auto border-t border-white/[0.03]">
+    <div class="mb-12">
+        <p class="section-tag"><i class="fa-solid fa-microchip mr-2"></i>Workflow</p>
+        <h2 class="section-h2">How your protection is built</h2>
+        <p class="section-lead text-sm sm:text-base">OpSec implementation algorithm: from initial analysis to full autonomy.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8">
+        <div class="relative group">
+            <div class="mb-5 flex items-end gap-3">
+                <span class="font-display font-black text-5xl text-white/10 group-hover:text-accent/20 transition-colors leading-none">01</span>
+                <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                    <i class="fa-solid fa-shield"></i>
+                </div>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white mb-2">Audit and Risks</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">We analyze your digital footprint and identify vulnerabilities. We build a custom threat model.</p>
+        </div>
+
+        <div class="relative group">
+            <div class="mb-5 flex items-end gap-3">
+                <span class="font-display font-black text-5xl text-white/10 group-hover:text-cyan-400/20 transition-colors leading-none">02</span>
+                <div class="w-10 h-10 rounded-xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400">
+                    <i class="fa-solid fa-compass-drafting"></i>
+                </div>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white mb-2">Design</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">Selection of network architecture (VLAN, VPN) and hardware (Pixel, MikroTik) for your tasks.</p>
+        </div>
+
+        <div class="relative group">
+            <div class="mb-5 flex items-end gap-3">
+                <span class="font-display font-black text-5xl text-white/10 group-hover:text-violet-400/20 transition-colors leading-none">03</span>
+                <div class="w-10 h-10 rounded-xl bg-violet-400/10 border border-violet-400/20 flex items-center justify-center text-violet-400">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white mb-2">Deployment</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">Flashing devices, configuring personal servers, Matrix, and encrypted cloud storage.</p>
+        </div>
+
+        <div class="relative group">
+            <div class="mb-5 flex items-end gap-3">
+                <span class="font-display font-black text-5xl text-white/10 group-hover:text-amber-400/20 transition-colors leading-none">04</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white mb-2">Key handover</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">Final training, handover of hardware keys and Recovery Guide for full autonomy.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ CONTACT SECTION ══════════════════════════════════════ -->
+<section id="contact" class="px-6 py-24 bg-slate-950 relative overflow-hidden">
+    <div class="contact-grid-bg"></div>
+    
+    <div class="max-w-3xl mx-auto relative z-10 text-center">
+        <p class="section-tag">Contact</p>
+        <h2 class="section-h2">Start a project</h2>
+        <p class="text-slate-500 mb-12 max-w-md mx-auto text-sm sm:text-base">Choose a convenient secure communication channel for initial consultation and audit.</p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-stretch">
+            <a href="https://t.me/b1naryworm" target="_blank" class="flex-1 flex items-center justify-center gap-4 p-5 rounded-2xl bg-[#10d9a0]/5 border border-[#10d9a0]/20 hover:bg-[#10d9a0]/10 hover:border-[#10d9a0]/50 transition-all group">
+                <div class="w-12 h-12 rounded-xl bg-[#10d9a0]/10 flex items-center justify-center text-[#10d9a0] group-hover:scale-110 transition-transform">
+                    <i class="fa-brands fa-telegram text-2xl"></i>
+                </div>
+                <div class="text-left">
+                    <span class="block font-mono text-[10px] uppercase tracking-widest text-[#10d9a0]/60">Secure Chat</span>
+                    <p class="text-white font-bold text-lg">Telegram</p>
+                </div>
+            </a>
+
+            <a href="mailto:b1naryw0rm@proton.me" class="flex-1 flex items-center justify-center gap-4 p-5 rounded-2xl bg-cyan-400/5 border border-cyan-400/20 hover:bg-cyan-400/10 hover:border-cyan-400/50 transition-all group">
+                <div class="w-12 h-12 rounded-xl bg-cyan-400/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-envelope text-2xl"></i>
+                </div>
+                <div class="text-left">
+                    <span class="block font-mono text-[10px] uppercase tracking-widest text-cyan-400/60">Encrypted</span>
+                    <p class="text-white font-bold text-lg">E‑mail</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="mt-12 p-6 rounded-2xl border border-dashed border-white/5 max-w-lg mx-auto">
+            <p class="text-[10px] sm:text-[11px] text-slate-600 leading-relaxed font-mono uppercase tracking-tight">
+                * It is recommended to use a VPN on first contact. <br class="hidden sm:block"> All messages are deleted after processing your request.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════════ -->
+<footer class="footer px-6 sm:px-12 py-12">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+    <div>
+      <div class="text-xs mt-1" style="color:#334155;font-family:'IBM Plex Mono',monospace;">personal cybersecurity · confidentiality guaranteed</div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="badge badge-cyan"><i class="fa-solid fa-map-marker-alt text-[9px]"></i> Worldwide</span>
+      <span class="badge"><i class="fa-solid fa-shield-halved text-[9px]"></i> Individual approach</span>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto mt-8 pt-6 border-t border-white/[0.04]">
+    <p class="text-xs" style="color:#1e293b;">
+      The presented packages are ready-made balanced solutions. You can create your own set of services or combine elements from different packages depending on your tasks. Configuration is tailored specifically to your threat profile.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
